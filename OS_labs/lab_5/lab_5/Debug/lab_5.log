@@ -1,0 +1,5 @@
+﻿  Server.cpp
+C:\Users\vladi\Documents\OS\lab_5\lab_5\lab_5\Server.cpp(75,8): warning C4101: dwBytesWrite: неиспользованная локальная переменная
+C:\Users\vladi\Documents\OS\lab_5\lab_5\lab_5\Server.cpp(73,7): warning C4101: lpszInMessage: неиспользованная локальная переменная
+C:\Users\vladi\Documents\OS\lab_5\lab_5\lab_5\Server.cpp(74,8): warning C4101: dwBytesRead: неиспользованная локальная переменная
+  lab_5.vcxproj -> C:\Users\vladi\Documents\OS\lab_5\lab_5\Debug\Server.exe
