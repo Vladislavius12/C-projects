@@ -10,6 +10,7 @@ private:
 public:
 	Bus_Table();
 	Bus_Table(std::string Company_name, int depart_time, int arrival_time);
+	friend bool operator <(const Bus_Table& bt1, const Bus_Table& bt2);
 	int getDepart_time() { return depart_time; }
 	int getnArrival_time() { return arrival_time; }
 	std::string getCompany_name() { return Company_name; }

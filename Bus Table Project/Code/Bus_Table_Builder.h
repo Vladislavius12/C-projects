@@ -7,5 +7,5 @@ public:
 	Bus_Table_Builder();
 	~Bus_Table_Builder();
 
-	Bus_Table fullfil(char* Company_name, char* depart_time_h, char* depart_time_m,char* arrival_time_h, char* arrival_time_m);
+	Bus_Table fullfil(char* Company_name, int depart_time, int arrival_time);
 };

@@ -3,9 +3,19 @@
 #include <cstring>
 #include <cstdlib>
 #include <vector>
+#include <list>
 #include "Bus_Table_Builder.h"
 
+bool operator <(const Bus_Table& bt1, const Bus_Table& bt2);
+
 void  SortData(std::vector<Bus_Table>& v);
+
+int pathTime(int departTime, int arrivalTime) {
+    if (arrivalTime - departTime < 0) {
+        return 1440 - departTime + arrivalTime;
+    }
+    return arrivalTime - departTime;
+}
 
 int main() {
     std::vector<Bus_Table> data; //Vector with data from the input file
@@ -42,14 +52,22 @@ int main() {
         in.getline(arrival_time_h, 256, ':');
         in.getline(arrival_time_m, 256, '\n');
 
+        int depart_time_h_numb = atoi(depart_time_h);
+        int depart_time_m_numb = atoi(depart_time_m);
+        int arrival_time_h_numb = atoi(arrival_time_h);
+        int arrival_time_m_numb = atoi(arrival_time_m);
 
-        data.push_back(builder.fullfil(Company_name, depart_time_h, depart_time_m, arrival_time_h, arrival_time_m));
+        int depart_time = depart_time_h_numb * 60 + depart_time_m_numb;
+        int arrival_time = arrival_time_h_numb * 60 + arrival_time_m_numb;
+
+        if (pathTime(depart_time, arrival_time) > 60) continue;
+        data.push_back(builder.fullfil(Company_name, depart_time, arrival_time));
     }
 
     for (int i = 0; i < (int)data.size(); i++) {
         Bus_Table first;
         first = data.at(i); //It is better to initialize as links
-        if (first.getnArrival_time() - first.getDepart_time() <= 60) { //Check 1 hour requirement
+        if (pathTime(first.getDepart_time(), first.getnArrival_time()) <= 60) { //Check 1 hour requirement
             right_data.push_back(first);
         }
         /*
@@ -93,38 +111,41 @@ int main() {
 
     for (int j = 0; j < (int)data.size(); j++) {
         bool eff = true;
-        Bus_Table second = data.at(j);
+        Bus_Table* second = &data.at(j);
         
         for (int i = 0; i < (int)data.size(); i++) {
             
-            Bus_Table first;
-            first = data.at(i);
+            Bus_Table* first = &data.at(i);
             
             if (i == j) continue;
-            if (second.getDepart_time() == first.getDepart_time()) {
-                if (second.getnArrival_time() > first.getnArrival_time()) {
+            if (second->getDepart_time() == first->getDepart_time()) {
+                if (second->getnArrival_time() > first->getnArrival_time()) {
                     eff = false;
+                    break;
                 }
-                else if (second.getnArrival_time() == first.getnArrival_time()) {
-                    if (std::string{ "Grotty" }.compare(second.getCompany_name()) == 0) {
+                else if (second->getnArrival_time() == first->getnArrival_time()) {
+                    if (std::string{ "Grotty" }.compare(second->getCompany_name()) == 0) {
                         eff = false;
+                        break;
                     }
                 }
             }
-            else  if (second.getnArrival_time() == first.getnArrival_time()) {
-                if (second.getDepart_time() < first.getDepart_time()) {
+            else  if (second->getnArrival_time() == first->getnArrival_time()) {
+                if (second->getDepart_time() < first->getDepart_time()) {
                     eff = false;
+                    break;
                 }
             }
-            else  if (second.getDepart_time() < first.getDepart_time()) {
-                if (second.getnArrival_time() > first.getnArrival_time()) {
+            else  if (second->getDepart_time() < first->getDepart_time()) {
+                if (second->getnArrival_time() > first->getnArrival_time()) {
+                    if (first->getDepart_time() >= 1380 && first->getnArrival_time() <= 60) continue;
                     eff = false;
+                    break;
                 }
             }
-            
         }
         if (eff) {
-            right_data.push_back(second);
+            right_data.push_back(*second);
         }
     }
 
@@ -150,11 +171,15 @@ int main() {
                 out << right_data[i].toString() << std::endl;
             }
         }
-    
+}
+
+bool operator <(const Bus_Table& bt1, const Bus_Table& bt2) {
+    if (bt1.depart_time < bt2.depart_time) true;
+    return false;
 }
 
 void  SortData(std::vector<Bus_Table>& v) {
-    for (int i = 0; i < (int)v.size() - 1; i++) {
+    /*for (int i = 0; i < (int)v.size() - 1; i++) {
         for (int j = 0; j < (int)v.size() - 1 - i; j++) {
             if (v[j].getDepart_time() > v[j + 1].getDepart_time()) {
                 Bus_Table t = v[j];
@@ -162,5 +187,10 @@ void  SortData(std::vector<Bus_Table>& v) {
                 v[j + 1] = t;
             }
         }
-    }
+    }*/
+    std::list <Bus_Table> l;
+    for (Bus_Table bt : v) l.push_back(bt);
+    v.clear();
+    l.sort();
+    for (std::list<Bus_Table>::iterator i = l.begin(); i != l.end(); i++) v.push_back(*i);
 }
